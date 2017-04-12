@@ -1,0 +1,32 @@
+version: "2"
+
+services:
+    service-a:
+        build: ./service-a
+        image: ${DOCKER_USER}/${REPO_NAME_PREFIX}_service-a
+        environment:
+            - APPINSIGHTS_INSTRUMENTATIONKEY
+        expose:
+            - "80"
+        depends_on:
+            - mycache
+            - service-b
+        labels:
+            com.microsoft.acs.dcos.marathon.healthcheck.path: "/"
+
+    service-b:
+        build: ./service-b
+        image: ${DOCKER_USER}/${REPO_NAME_PREFIX}_service-b
+        environment:
+            - APPINSIGHTS_INSTRUMENTATIONKEY
+        expose:
+            - "80"
+        labels:
+            com.microsoft.acs.dcos.marathon.healthcheck.path: "/"
+
+    mycache:
+        image: redis:alpine
+        expose:
+            - "6379"
+        labels:
+            com.microsoft.acs.dcos.marathon.healthcheck: "true"
